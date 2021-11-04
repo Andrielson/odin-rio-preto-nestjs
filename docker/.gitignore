@@ -1,0 +1,5 @@
+*
+!batch/
+!.gitignore
+!docker-compose.override.yml.example
+!docker-compose.yml
