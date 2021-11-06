@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { createTransport, Transporter } from 'nodemailer';
 import Mail from 'nodemailer/lib/mailer';
 import { from } from 'rxjs';
-import { MailMessage } from './mail-message.interface';
+import { MailMessage } from './interfaces/mail-message.interface';
 import { MailService } from './mail.service';
 
 interface NodeMailerOptions {

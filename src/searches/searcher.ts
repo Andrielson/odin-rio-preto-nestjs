@@ -1,6 +1,6 @@
 import { Injectable, Scope } from '@nestjs/common';
 import { from, iif, map, mergeMap, of, toArray } from 'rxjs';
-import { PublicationsMessageDto } from 'src/mails/publications-message-dto';
+import { PublicationsMessageDto } from 'src/mails/interfaces/publications-message-dto.interface';
 import { Publication } from 'src/publications/publication';
 import { PublicationsService } from 'src/publications/publications.service';
 import { Subscriber } from 'src/subscribers/subscriber';
