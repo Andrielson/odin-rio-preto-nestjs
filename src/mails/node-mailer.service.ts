@@ -1,7 +1,8 @@
-import { Injectable, OnModuleDestroy } from '@nestjs/common';
+import { Injectable, Logger, OnApplicationShutdown } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createTransport, Transporter } from 'nodemailer';
 import Mail from 'nodemailer/lib/mailer';
+import { from } from 'rxjs';
 import { MailMessage } from './mail-message.interface';
 import { MailService } from './mail.service';
 
@@ -27,7 +28,11 @@ const providersOptions = [
 ];
 
 @Injectable()
-export class NodeMailerService extends MailService implements OnModuleDestroy {
+export class NodeMailerService
+  extends MailService
+  implements OnApplicationShutdown
+{
+  readonly #logger = new Logger(NodeMailerService.name);
   readonly #config: ConfigService;
   readonly #transporter: Transporter;
   readonly #from: Mail.Address;
@@ -69,8 +74,7 @@ export class NodeMailerService extends MailService implements OnModuleDestroy {
     }
 
     options.pool =
-      !!this.#config.get<string>('NODEMAILER_SMTP_POOL') &&
-      this.#config.get<string>('NODEMAILER_SMTP_POOL') === 'true';
+      this.#config.get<string>('NODEMAILER_SMTP_POOL', 'false') === 'true';
 
     return options;
   }
@@ -102,24 +106,18 @@ export class NodeMailerService extends MailService implements OnModuleDestroy {
     return { from, headers };
   }
 
-  async sendMail(message: MailMessage) {
-    try {
-      console.log('enviando email!');
-      const options = {
-        ...message,
-        from: this.#from,
-        headers: this.#headers,
-      };
-      console.log({ options });
-      console.log({ transporter: this.#transporter });
-      await this.#transporter.sendMail(options);
-    } catch (error) {
-      console.error('errou!');
-      console.error(`MailTransporter: ${error}`);
-    }
+  sendMail(message: MailMessage) {
+    const mailOptions = {
+      ...message,
+      from: this.#from,
+      headers: this.#headers,
+    };
+    return from(this.#transporter.sendMail(mailOptions));
   }
 
-  onModuleDestroy() {
-    return this.#transporter.close();
+  onApplicationShutdown() {
+    this.#logger.log('Encerrando pool do NodeMailer...');
+    this.#transporter.close();
+    this.#logger.log('Pool do NodeMailer encerrado!');
   }
 }

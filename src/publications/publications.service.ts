@@ -1,5 +1,5 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { parse } from 'node-html-parser';
 import { concatMap, filter, from, map } from 'rxjs';
 import { URLSearchParams } from 'url';
@@ -7,6 +7,7 @@ import { Publication } from './publication';
 
 @Injectable()
 export class PublicationsService {
+  readonly #logger = new Logger(PublicationsService.name);
   readonly #http!: HttpService;
   readonly #apiUrl: string = 'https://www.riopreto.sp.gov.br/DiarioOficial';
 
