@@ -14,8 +14,8 @@ export class Searcher {
     this.#pubService = service;
   }
 
-  run(sub: Subscriber, date: Date) {
-    return from(sub.keywords).pipe(
+  run({ email, keywords, unsubscribeLink }: Subscriber, date: Date) {
+    return from(keywords).pipe(
       mergeMap((keyword) =>
         this.#fromCache('semae', date).pipe(
           map(
@@ -26,12 +26,11 @@ export class Searcher {
       ),
       toArray(),
       map(
-        (entries) =>
-          new PublicationsMessageDto(
-            sub.email,
-            new Map<string, Publication[]>(entries),
-            sub.unsubscribeLink,
-          ),
+        (entries): PublicationsMessageDto => ({
+          email,
+          unsubscribeLink,
+          publicationsByKeyword: new Map<string, Publication[]>(entries),
+        }),
       ),
     );
   }

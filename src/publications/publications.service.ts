@@ -37,13 +37,12 @@ export class PublicationsService {
         filter((href) =>
           href.startsWith('Diario!arquivo.action?diario.codPublicacao='),
         ),
-        map<string, Publication>(
-          (href) =>
-            new Publication(
-              keyword,
-              href.split('=')[1],
-              `${this.#apiUrl}/${href}`,
-            ),
+        map(
+          (href): Publication => ({
+            keyword,
+            code: href.split('=')[1],
+            link: `${this.#apiUrl}/${href}`,
+          }),
         ),
       );
   }
