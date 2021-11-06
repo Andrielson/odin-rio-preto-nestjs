@@ -1,8 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { parse } from 'node-html-parser';
-import { from } from 'rxjs';
-import { concatMap, filter, map } from 'rxjs/operators';
+import { concatMap, filter, from, map } from 'rxjs';
 import { URLSearchParams } from 'url';
 import { Publication } from './publication';
 
@@ -38,11 +37,14 @@ export class PublicationsService {
         filter((href) =>
           href.startsWith('Diario!arquivo.action?diario.codPublicacao='),
         ),
-        map<string, Publication>((href) => ({
-          code: href.split('=')[1],
-          keyword,
-          link: `${this.#apiUrl}/${href}`,
-        })),
+        map<string, Publication>(
+          (href) =>
+            new Publication(
+              keyword,
+              href.split('=')[1],
+              `${this.#apiUrl}/${href}`,
+            ),
+        ),
       );
   }
 

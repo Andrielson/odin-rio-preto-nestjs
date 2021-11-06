@@ -1,7 +1,6 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
-import { from } from 'rxjs';
-import { concatMap } from 'rxjs/operators';
+import { concatMap, from, map } from 'rxjs';
 import { Subscriber } from './subscriber';
 
 @Injectable()
@@ -14,8 +13,14 @@ export class SubscribersService {
   }
 
   public findAll() {
-    return this.#http
-      .get<Subscriber[]>(this.#apiUrl)
-      .pipe(concatMap(({ data }) => from(data)));
+    return this.#http.get<Subscriber[]>(this.#apiUrl).pipe(
+      map(({ data }) =>
+        data.map(
+          ({ email, keywords, unsubscribeLink }) =>
+            new Subscriber(email, keywords, unsubscribeLink),
+        ),
+      ),
+      concatMap((subscribers) => from(subscribers)),
+    );
   }
 }
