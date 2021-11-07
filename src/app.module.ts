@@ -2,8 +2,8 @@ import { Module } from '@nestjs/common';
 import { AppService } from './app.service';
 import { SubscribersModule } from './subscribers/subscribers.module';
 import { PublicationsModule } from './publications/publications.module';
-import { SearchesModule } from './searches/searches.module';
-import { MailModule } from './mails/mail.module';
+import { SearchModule } from './search/search.module';
+import { MailModule } from './mail/mail.module';
 import { ConfigModule } from '@nestjs/config';
 
 const isGlobal = true;
@@ -13,7 +13,7 @@ const isGlobal = true;
     ConfigModule.forRoot({ isGlobal }),
     SubscribersModule,
     PublicationsModule,
-    SearchesModule,
+    SearchModule,
     MailModule,
   ],
   providers: [AppService],
