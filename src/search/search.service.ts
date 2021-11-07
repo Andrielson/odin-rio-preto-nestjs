@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { from, iif, map, mapTo, mergeMap, of, toArray } from 'rxjs';
-import { PublicationsMessageDto } from 'src/mails/interfaces/publications-message-dto.interface';
-import { MailService } from 'src/mails/mail.service';
-import { PublicationsMessageFactory } from 'src/mails/messages/publications-message-factory';
+import { PublicationsMessageDto } from 'src/mail/interfaces/publications-message-dto.interface';
+import { MailService } from 'src/mail/mail.service';
+import { PublicationsMessageFactory } from 'src/mail/messages/publications-message-factory';
 import { Publication } from 'src/publications/publication';
 import { PublicationsService } from 'src/publications/publications.service';
 import { Subscriber } from 'src/subscribers/subscriber';
@@ -11,8 +11,8 @@ import { SubscribersService } from 'src/subscribers/subscribers.service';
 type PublicationsCache = Map<string, Publication[]>;
 
 @Injectable()
-export class SearchesService {
-  readonly #logger = new Logger(SearchesService.name);
+export class SearchService {
+  readonly #logger = new Logger(SearchService.name);
   readonly #mailer: MailService;
   readonly #messageFactory: PublicationsMessageFactory;
   readonly #pubService: PublicationsService;

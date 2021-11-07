@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
-import { MailModule } from 'src/mails/mail.module';
+import { MailModule } from 'src/mail/mail.module';
 import { PublicationsModule } from 'src/publications/publications.module';
 import { SubscribersModule } from 'src/subscribers/subscribers.module';
-import { SearchesService } from './searches.service';
+import { SearchService } from './search.service';
 
 @Module({
   imports: [MailModule, PublicationsModule, SubscribersModule],
-  providers: [SearchesService],
-  exports: [SearchesService],
+  providers: [SearchService],
+  exports: [SearchService],
 })
-export class SearchesModule {}
+export class SearchModule {}

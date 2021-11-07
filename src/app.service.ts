@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { SearchesService } from './searches/searches.service';
+import { SearchService } from './search/search.service';
 
 @Injectable()
 export class AppService {
-  #searchService: SearchesService;
-  constructor(searchService: SearchesService) {
+  #searchService: SearchService;
+
+  constructor(searchService: SearchService) {
     this.#searchService = searchService;
   }
+
   doIt(date: Date) {
     return this.#searchService.searchByDate(date);
   }
