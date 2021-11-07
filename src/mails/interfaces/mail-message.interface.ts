@@ -1,6 +1,6 @@
 export interface MailMessage {
-  html: string;
-  subject: string;
-  text: string;
-  to: string;
+  readonly html: string;
+  readonly subject: string;
+  readonly text: string;
+  readonly to: string;
 }

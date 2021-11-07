@@ -15,13 +15,13 @@ export class PublicationsService {
     this.#http = httpService;
   }
 
-  public findByKeywordAndDate(keyword: string, date: Date) {
+  findByKeywordAndDate(keyword: string, date: Date) {
     const headers = {
       'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
     };
     const params = new URLSearchParams({
       'Diario!listar.action': 'Buscar',
-      'diario.dataPublicacao': this.convertDateToStringInParamsFormat(date),
+      'diario.dataPublicacao': this.#convertDateToStringInParamsFormat(date),
     });
     if (keyword !== '*') params.append('diario.palavraChave', keyword);
 
@@ -48,7 +48,7 @@ export class PublicationsService {
       );
   }
 
-  private convertDateToStringInParamsFormat(date: Date) {
+  #convertDateToStringInParamsFormat(date: Date) {
     const searchValue = /(\d{4})-(\d{2})-(\d{2}).*/;
     const replaceValue = '$3/$2/$1';
     return date.toISOString().replace(searchValue, replaceValue);

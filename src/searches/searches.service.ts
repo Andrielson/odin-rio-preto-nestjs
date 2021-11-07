@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { combineLatest, from, mapTo, mergeMap, tap } from 'rxjs';
 import { MailService } from 'src/mails/mail.service';
+import { PublicationsMessageFactory } from 'src/mails/messages/publications-message-factory';
 import { SubscribersService } from 'src/subscribers/subscribers.service';
 import { Searcher } from './searcher';
 
@@ -10,15 +11,18 @@ export class SearchesService {
   readonly #logger = new Logger(SearchesService.name);
   readonly #moduleRef: ModuleRef;
   readonly #mailer: MailService;
+  readonly #messageFactory: PublicationsMessageFactory;
   readonly #subService: SubscribersService;
 
   constructor(
     moduleRef: ModuleRef,
     mailer: MailService,
+    messageFactory: PublicationsMessageFactory,
     subService: SubscribersService,
   ) {
     this.#moduleRef = moduleRef;
     this.#mailer = mailer;
+    this.#messageFactory = messageFactory;
     this.#subService = subService;
   }
 
@@ -30,12 +34,7 @@ export class SearchesService {
       mergeMap(([searcher, sub]) => searcher.run(sub, date)),
       mergeMap((dto) =>
         this.#mailer
-          .sendMail({
-            html: '<h1>Teste HTML</h1>',
-            subject: 'Teste',
-            text: 'Teste TXT',
-            to: dto.email,
-          })
+          .sendMail(this.#messageFactory.getMessage(date, dto))
           .pipe(mapTo(dto)),
       ),
     );
