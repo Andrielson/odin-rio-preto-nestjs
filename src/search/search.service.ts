@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { from, iif, map, mapTo, mergeMap, of, toArray } from 'rxjs';
-import { PublicationsMessageDto } from 'src/mail/interfaces/publications-message-dto.interface';
 import { MailService } from 'src/mail/mail.service';
-import { PublicationsMessageFactory } from 'src/mail/messages/publications-message-factory';
+import { PublicationsMessageDto } from 'src/mail/messages/publications-message/publications-message-dto.interface';
+import { PublicationsMessageService } from 'src/mail/messages/publications-message/publications-message.service';
 import { Publication } from 'src/publications/publication';
 import { PublicationsService } from 'src/publications/publications.service';
 import { Subscriber } from 'src/subscribers/subscriber';
@@ -14,18 +14,18 @@ type PublicationsCache = Map<string, Publication[]>;
 export class SearchService {
   readonly #logger = new Logger(SearchService.name);
   readonly #mailer: MailService;
-  readonly #messageFactory: PublicationsMessageFactory;
+  readonly #msgService: PublicationsMessageService;
   readonly #pubService: PublicationsService;
   readonly #subService: SubscribersService;
 
   constructor(
     mailer: MailService,
-    messageFactory: PublicationsMessageFactory,
+    msgService: PublicationsMessageService,
     pubService: PublicationsService,
     subService: SubscribersService,
   ) {
     this.#mailer = mailer;
-    this.#messageFactory = messageFactory;
+    this.#msgService = msgService;
     this.#pubService = pubService;
     this.#subService = subService;
   }
@@ -38,7 +38,7 @@ export class SearchService {
       ),
       mergeMap((dto) =>
         this.#mailer
-          .sendMail(this.#messageFactory.getMessage(date, dto))
+          .sendMail(this.#msgService.getMessage(date, dto))
           .pipe(mapTo(dto)),
       ),
     );
@@ -59,8 +59,8 @@ export class SearchService {
         ),
       ),
       toArray(),
-      map(
-        (entries): PublicationsMessageDto => ({
+      map((entries) =>
+        Object.freeze<PublicationsMessageDto>({
           email,
           unsubscribeLink,
           publicationsByKeyword: new Map<string, Publication[]>(entries),
