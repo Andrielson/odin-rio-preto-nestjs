@@ -40,7 +40,6 @@ export class PublicationsService {
         ),
         map(
           (href): Publication => ({
-            keyword,
             code: href.split('=')[1],
             link: `${this.#apiUrl}/${href}`,
           }),
