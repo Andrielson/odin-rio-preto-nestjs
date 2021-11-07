@@ -62,6 +62,39 @@ export class PublicationsMessageFactory {
     formattedDate: string,
     { publicationsByKeyword, unsubscribeLink }: PublicationsMessageDto,
   ) {
+    return this.#replaceCommonInfo(
+      this.#htmlTemplate,
+      unsubscribeLink,
+      this.#getHtmlMessage(formattedDate, publicationsByKeyword),
+    ).replace(/%MAIL_ASSETS_URL%/g, this.#mailAssetsUrl);
+  }
+
+  #getHtmlMessage(
+    formattedDate: string,
+    publicationsByKeyword: Map<string, Publication[]>,
+  ) {
+    return publicationsByKeyword.size === 1 && publicationsByKeyword.has('*')
+      ? this.#getHtmlMessageWithWildcard(
+          formattedDate,
+          publicationsByKeyword.get('*')!,
+        )
+      : this.#getHtmlMessageWithKeywords(formattedDate, publicationsByKeyword);
+  }
+
+  #getHtmlMessageWithWildcard(
+    formattedDate: string,
+    publications: Publication[],
+  ) {
+    if (publications.length === 0)
+      return `Não houve publicações no Diário Oficial de São José do Rio Preto na data de <span>${formattedDate}</span>.`;
+    const publicationsList = this.#makePublicationsListHtml(publications);
+    return `Segue a lista das publicações no Diário Oficial de São José do Rio Preto na data de <span>${formattedDate}</span>${publicationsList}`;
+  }
+
+  #getHtmlMessageWithKeywords(
+    formattedDate: string,
+    publicationsByKeyword: Map<string, Publication[]>,
+  ) {
     const keywordsList = [...publicationsByKeyword.entries()]
       .map(([keyword, publications]) => {
         const keywordResult =
@@ -71,17 +104,52 @@ export class PublicationsMessageFactory {
         return `<li><b>${keyword}</b>${keywordResult}</li>`;
       })
       .join('');
-    const message = `Segue a lista das publicações no Diário Oficial de São José do Rio Preto na data de <span>${formattedDate}</span><ul>${keywordsList}</ul>`;
-    return this.#replaceCommonInfo(
-      this.#htmlTemplate,
-      unsubscribeLink,
-      message,
-    ).replace(/%MAIL_ASSETS_URL%/g, this.#mailAssetsUrl);
+    return `Segue a lista das publicações no Diário Oficial de São José do Rio Preto na data de <span>${formattedDate}</span><ul>${keywordsList}</ul>`;
+  }
+
+  #makePublicationsListHtml(publications: Publication[]) {
+    const listItems = publications
+      .map(({ code, link }) => `<li><a href="${link}">${code}</a></li>`)
+      .join('');
+    return `<ul>${listItems}</ul>`;
   }
 
   #getText(
     formattedDate: string,
     { publicationsByKeyword, unsubscribeLink }: PublicationsMessageDto,
+  ) {
+    return this.#replaceCommonInfo(
+      this.#textTemplate,
+      unsubscribeLink,
+      this.#getTextMessage(formattedDate, publicationsByKeyword),
+    );
+  }
+
+  #getTextMessage(
+    formattedDate: string,
+    publicationsByKeyword: Map<string, Publication[]>,
+  ) {
+    return publicationsByKeyword.size === 1 && publicationsByKeyword.has('*')
+      ? this.#getTextMessageWithWildcard(
+          formattedDate,
+          publicationsByKeyword.get('*')!,
+        )
+      : this.#getTextMessageWithKeywords(formattedDate, publicationsByKeyword);
+  }
+
+  #getTextMessageWithWildcard(
+    formattedDate: string,
+    publications: Publication[],
+  ) {
+    if (publications.length === 0)
+      return `Não houve publicações no Diário Oficial de São José do Rio Preto na data de ${formattedDate}.`;
+    const publicationsList = this.#makePublicationsListText(publications, 1);
+    return `Segue a lista das publicações no Diário Oficial de São José do Rio Preto na data de ${formattedDate}\n\n${publicationsList}`;
+  }
+
+  #getTextMessageWithKeywords(
+    formattedDate: string,
+    publicationsByKeyword: Map<string, Publication[]>,
   ) {
     const keywordsList = [...publicationsByKeyword.entries()]
       .map(([keyword, publications]) => {
@@ -92,22 +160,11 @@ export class PublicationsMessageFactory {
         return `\t• ${keyword}${keywordResult}`;
       })
       .join('\n');
-    const message = `Segue a lista das publicações no Diário Oficial de São José do Rio Preto na data de ${formattedDate}\n\n${keywordsList}`;
-    return this.#replaceCommonInfo(
-      this.#textTemplate,
-      unsubscribeLink,
-      message,
-    );
+    return `Segue a lista das publicações no Diário Oficial de São José do Rio Preto na data de ${formattedDate}\n\n${keywordsList}`;
   }
 
-  #makePublicationsListHtml(publications: Publication[]) {
-    const listItems = publications
-      .map(({ code, link }) => `<li><a href="${link}">${code}</a></li>`)
-      .join('');
-    return `<ul>${listItems}</ul>`;
-  }
-
-  #makePublicationsListText(publications: Publication[]) {
-    return publications.map(({ link }) => `\t\t▪ ${link}`).join('\n');
+  #makePublicationsListText(publications: Publication[], tabs = 2) {
+    const tabulations = Array(tabs).fill('\t').join('');
+    return publications.map(({ link }) => `${tabulations}▪ ${link}`).join('\n');
   }
 }
