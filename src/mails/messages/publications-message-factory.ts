@@ -96,29 +96,11 @@ export class PublicationsMessageFactory {
       .map(([keyword, publications]) => {
         const publicationsList = publications
           .map(({ code, link }) => `<li><a href="${link}">${code}</a></li>`)
-          .join('\n');
+          .join('');
         return `<li><b>${keyword}</b><ul>${publicationsList}</ul></li>`;
       })
       .join('');
     return `Segue a lista das publicações no Diário Oficial de São José do Rio Preto na data de <span>${formattedDate}</span><ul>${keywordsList}</ul>`;
-    // return `Segue a lista das publicações no Diário Oficial de São José do Rio Preto na data de <span>${formattedDate}</span><ul>`
-    //   .concat(
-    //     [...publicationsByKeyword.entries()]
-    //       .map(([keyword, publications]) =>
-    //         `<li><b>${keyword}</b><ul>`
-    //           .concat(
-    //             publications
-    //               .map(
-    //                 ({ code, link }) =>
-    //                   `<li><a href="${link}">${code}</a></li>`,
-    //               )
-    //               .join('\n'),
-    //           )
-    //           .concat('</ul></li>'),
-    //       )
-    //       .join(''),
-    //   )
-    //   .concat('</ul>');
   }
 
   #makePublicationsListText(
