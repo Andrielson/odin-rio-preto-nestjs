@@ -1,5 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { Publication } from 'src/publications/publication';
 import { MailMessage } from '../interfaces/mail-message.interface';
 import { PublicationsMessageDto } from '../interfaces/publications-message-dto.interface';
 import {
@@ -61,7 +62,10 @@ export class PublicationsMessageFactory {
     formattedDate: string,
     { publicationsByKeyword, unsubscribeLink }: PublicationsMessageDto,
   ) {
-    const message = `Não houve publicações no Diário Oficial de São José do Rio Preto na data de <span>${formattedDate}</span>`;
+    const message =
+      publicationsByKeyword.size === 0
+        ? `Não houve publicações no Diário Oficial de São José do Rio Preto na data de <span>${formattedDate}</span>`
+        : this.#makePublicationsListHtml(formattedDate, publicationsByKeyword);
     return this.#replaceCommonInfo(
       this.#htmlTemplate,
       unsubscribeLink,
@@ -73,11 +77,62 @@ export class PublicationsMessageFactory {
     formattedDate: string,
     { publicationsByKeyword, unsubscribeLink }: PublicationsMessageDto,
   ) {
-    const message = `Não houve publicações no Diário Oficial de São José do Rio Preto na data de ${formattedDate}`;
+    const message =
+      publicationsByKeyword.size === 0
+        ? `Não houve publicações no Diário Oficial de São José do Rio Preto na data de ${formattedDate}`
+        : this.#makePublicationsListText(formattedDate, publicationsByKeyword);
     return this.#replaceCommonInfo(
       this.#textTemplate,
       unsubscribeLink,
       message,
     );
+  }
+
+  #makePublicationsListHtml(
+    formattedDate: string,
+    publicationsByKeyword: Map<string, Publication[]>,
+  ) {
+    const keywordsList = [...publicationsByKeyword.entries()]
+      .map(([keyword, publications]) => {
+        const publicationsList = publications
+          .map(({ code, link }) => `<li><a href="${link}">${code}</a></li>`)
+          .join('\n');
+        return `<li><b>${keyword}</b><ul>${publicationsList}</ul></li>`;
+      })
+      .join('');
+    return `Segue a lista das publicações no Diário Oficial de São José do Rio Preto na data de <span>${formattedDate}</span><ul>${keywordsList}</ul>`;
+    // return `Segue a lista das publicações no Diário Oficial de São José do Rio Preto na data de <span>${formattedDate}</span><ul>`
+    //   .concat(
+    //     [...publicationsByKeyword.entries()]
+    //       .map(([keyword, publications]) =>
+    //         `<li><b>${keyword}</b><ul>`
+    //           .concat(
+    //             publications
+    //               .map(
+    //                 ({ code, link }) =>
+    //                   `<li><a href="${link}">${code}</a></li>`,
+    //               )
+    //               .join('\n'),
+    //           )
+    //           .concat('</ul></li>'),
+    //       )
+    //       .join(''),
+    //   )
+    //   .concat('</ul>');
+  }
+
+  #makePublicationsListText(
+    formattedDate: string,
+    publicationsByKeyword: Map<string, Publication[]>,
+  ) {
+    const keywordsList = [...publicationsByKeyword.entries()]
+      .map(([keyword, publications]) => {
+        const publicationsList = publications
+          .map(({ link }) => `\t\t▪ ${link}`)
+          .join('\n');
+        return `\t• ${keyword}\n${publicationsList}`;
+      })
+      .join('\n');
+    return `Segue a lista das publicações no Diário Oficial de São José do Rio Preto na data de ${formattedDate}\n\n${keywordsList}`;
   }
 }
