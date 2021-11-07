@@ -51,7 +51,7 @@ export class SearchService {
   ) {
     return from(keywords).pipe(
       mergeMap((keyword) =>
-        this.#fromCache('semae', date, publicationsCache).pipe(
+        this.#fromCache(keyword, date, publicationsCache).pipe(
           map(
             (publications) =>
               [keyword, publications] as [string, Publication[]],
