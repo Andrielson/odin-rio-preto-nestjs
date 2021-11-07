@@ -38,8 +38,8 @@ export class PublicationsService {
         filter((href) =>
           href.startsWith('Diario!arquivo.action?diario.codPublicacao='),
         ),
-        map(
-          (href): Publication => ({
+        map((href) =>
+          Object.freeze<Publication>({
             code: href.split('=')[1],
             link: `${this.#apiUrl}/${href}`,
           }),

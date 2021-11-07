@@ -16,6 +16,6 @@ export class SubscribersService {
   public findAll() {
     return this.#http
       .get<Subscriber[]>(this.#apiUrl)
-      .pipe(concatMap(({ data }) => from(data)));
+      .pipe(concatMap(({ data }) => from(data.map((it) => Object.freeze(it)))));
   }
 }

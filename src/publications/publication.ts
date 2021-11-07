@@ -1,4 +1,4 @@
 export interface Publication {
-  code: string;
-  link: string;
+  readonly code: string;
+  readonly link: string;
 }

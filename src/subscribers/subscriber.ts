@@ -1,5 +1,5 @@
 export interface Subscriber {
-  email: string;
-  keywords: string[];
-  unsubscribeLink: string;
+  readonly email: string;
+  readonly keywords: string[];
+  readonly unsubscribeLink: string;
 }
