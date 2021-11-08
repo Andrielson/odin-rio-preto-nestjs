@@ -9,7 +9,7 @@ export class AppService {
     this.#searchService = searchService;
   }
 
-  doIt(date: Date) {
+  searchAndNotify(date: Date) {
     return this.#searchService.searchByDate(date);
   }
 }
