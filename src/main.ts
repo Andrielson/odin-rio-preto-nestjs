@@ -1,7 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { subDays } from 'date-fns';
-import { catchError, concat, EMPTY, merge } from 'rxjs';
+import { catchError, EMPTY, merge } from 'rxjs';
 import { AppModule } from './app.module';
 import { AppService } from './app.service';
 
@@ -16,9 +16,9 @@ async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule);
   app.enableShutdownHooks();
   const appService = app.get(AppService);
-  const myDate = new Date('2021-10-04');
+  const date = new Date();
 
-  const dates = getDates(myDate);
+  const dates = getDates(date);
   const searches = dates.map((d) => appService.searchAndNotify(d));
 
   const subscription = merge(...searches)
