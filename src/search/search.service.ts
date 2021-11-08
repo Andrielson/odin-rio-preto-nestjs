@@ -1,5 +1,15 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { from, iif, map, mapTo, mergeMap, of, toArray } from 'rxjs';
+import {
+  concatMap,
+  delay,
+  from,
+  iif,
+  map,
+  mergeMap,
+  of,
+  tap,
+  toArray,
+} from 'rxjs';
 import { MailService } from 'src/mail/mail.service';
 import { PublicationsMessageDto } from 'src/mail/messages/publications-message/publications-message-dto.interface';
 import { PublicationsMessageService } from 'src/mail/messages/publications-message/publications-message.service';
@@ -33,13 +43,18 @@ export class SearchService {
   searchByDate(date: Date) {
     const publicationsCache = new Map<string, Publication[]>();
     return this.#subService.findAll().pipe(
+      tap((sub) =>
+        this.#logger.log(`Searching publications for ${sub.email}...`),
+      ),
       mergeMap((sub) =>
         this.#searchPublicationsBySubscriber(sub, date, publicationsCache),
       ),
-      mergeMap((dto) =>
-        this.#mailer
-          .sendMail(this.#msgService.getMessage(date, dto))
-          .pipe(mapTo(dto)),
+      tap((dto) => this.#logger.log(`Composing email to ${dto.email}...`)),
+      concatMap((dto) =>
+        this.#mailer.sendMail(this.#msgService.getMessage(date, dto)).pipe(
+          tap(() => this.#logger.log(`Email sent to ${dto.email}!`)),
+          delay(2000),
+        ),
       ),
     );
   }
