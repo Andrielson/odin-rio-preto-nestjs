@@ -8,7 +8,7 @@ import { Publication } from './publication';
 @Injectable()
 export class PublicationsService {
   readonly #logger = new Logger(PublicationsService.name);
-  readonly #http!: HttpService;
+  readonly #http: HttpService;
   readonly #apiUrl: string = 'https://www.riopreto.sp.gov.br/DiarioOficial';
 
   constructor(httpService: HttpService) {

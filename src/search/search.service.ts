@@ -1,16 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import {
-  concatMap,
-  delay,
-  from,
-  iif,
-  map,
-  mergeMap,
-  of,
-  tap,
-  toArray,
-} from 'rxjs';
-import { MailService } from 'src/mail/mail.service';
+import { from, iif, map, mergeMap, of, tap, toArray } from 'rxjs';
+import { MailSchedulerService } from 'src/mail/mail-scheduler.service';
 import { PublicationsMessageDto } from 'src/mail/messages/publications-message/publications-message-dto.interface';
 import { PublicationsMessageService } from 'src/mail/messages/publications-message/publications-message.service';
 import { Publication } from 'src/publications/publication';
@@ -23,18 +13,18 @@ type PublicationsCache = Map<string, Publication[]>;
 @Injectable()
 export class SearchService {
   readonly #logger = new Logger(SearchService.name);
-  readonly #mailer: MailService;
+  readonly #mailScheduler: MailSchedulerService;
   readonly #msgService: PublicationsMessageService;
   readonly #pubService: PublicationsService;
   readonly #subService: SubscribersService;
 
   constructor(
-    mailer: MailService,
+    mailScheduler: MailSchedulerService,
     msgService: PublicationsMessageService,
     pubService: PublicationsService,
     subService: SubscribersService,
   ) {
-    this.#mailer = mailer;
+    this.#mailScheduler = mailScheduler;
     this.#msgService = msgService;
     this.#pubService = pubService;
     this.#subService = subService;
@@ -44,16 +34,17 @@ export class SearchService {
     const publicationsCache = new Map<string, Publication[]>();
     return this.#subService.findAll().pipe(
       tap((sub) =>
-        this.#logger.log(`Searching publications for ${sub.email}...`),
+        this.#logger.log(
+          `Searching publications for ${sub.email} on ${date
+            .toISOString()
+            .slice(0, 10)}...`,
+        ),
       ),
       mergeMap((sub) =>
-        this.#searchPublicationsBySubscriber(sub, date, publicationsCache),
-      ),
-      tap((dto) => this.#logger.log(`Composing email to ${dto.email}...`)),
-      concatMap((dto) =>
-        this.#mailer.sendMail(this.#msgService.getMessage(date, dto)).pipe(
-          tap(() => this.#logger.log(`Email sent to ${dto.email}!`)),
-          delay(2000),
+        this.#searchPublicationsBySubscriber(sub, date, publicationsCache).pipe(
+          tap((dto) => this.#logger.log(`Composing email to ${dto.email}...`)),
+          map((dto) => this.#msgService.getMessage(date, dto)),
+          map((message) => this.#mailScheduler.addMessage(message)),
         ),
       ),
     );

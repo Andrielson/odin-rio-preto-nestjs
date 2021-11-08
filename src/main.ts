@@ -21,7 +21,7 @@ async function bootstrap() {
   const dates = getDates(myDate);
   const searches = dates.map((d) => appService.searchAndNotify(d));
 
-  const subscription = concat(...searches)
+  const subscription = merge(...searches)
     .pipe(
       catchError((error) => {
         logger.error(error);
