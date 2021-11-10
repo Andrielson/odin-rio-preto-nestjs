@@ -1,0 +1,17 @@
+Olá,
+
+%MESSAGE%
+
+Atenciosamente,
+
+© %YEAR% - Andrielson Silva
+
+https://github.com/andrielson/odin-rio-preto-web
+
+
+Para cancelar sua inscrição, clique neste link: %UNSUBSCRIBE_LINK%
+
+
+Este boletim não possui nenhuma relação com o município de São José do Rio Preto-SP, sua prefeitura, suas autarquias e demais entidades municipais.
+É oferecido gratuitamente e sem nenhuma garantia por um engenheiro de software independente e sem nenhum vínculo político ou partidário, com a única intenção de ajudar a população e demais interessados.
+Para maiores informações, consulte os termos de uso no link %APP_URL%/terms-of-use

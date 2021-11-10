@@ -1,0 +1,27 @@
+version: "2.4"
+
+networks:
+  default:
+    external: true
+    name: andrielson
+
+services:
+  batch:
+    command: ["tail", "-f", "/etc/os-release"]
+    container_name: odin_rio_preto_batch
+    environment:
+      YARN_CACHE_FOLDER: /mnt/yarn-cache
+    user: "1000:1000"
+    volumes:
+      - type: bind
+        source: ../.
+        target: /usr/local/src/odin
+      - type: volume
+        source: yarn_cache
+        target: /mnt/yarn-cache
+    working_dir: /usr/local/src/odin
+
+volumes:
+  yarn_cache:
+    external: true
+    name: yarn_lts_cache
