@@ -14,5 +14,9 @@ include:
 
 deploy-prod:
   stage: deploy
+  image: registry.gitlab.com/andrielson/odin-rio-preto-nestjs:gitlab-ci
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
   script:
-    - echo "This job deploys something from the $CI_COMMIT_BRANCH branch."
+    - cd /srv
+    - node dist/main
