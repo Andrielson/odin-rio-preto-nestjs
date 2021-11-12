@@ -10,3 +10,8 @@ sast:
   stage: test
 include:
 - template: Security/SAST.gitlab-ci.yml
+
+deploy:
+  stage: deploy
+  script:
+    - echo "This job deploys something from the $CI_COMMIT_BRANCH branch."
