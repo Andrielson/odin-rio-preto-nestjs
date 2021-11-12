@@ -7,8 +7,11 @@
 stages:
 - test
 - deploy
+
 sast:
   stage: test
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push"
 include:
 - template: Security/SAST.gitlab-ci.yml
 
