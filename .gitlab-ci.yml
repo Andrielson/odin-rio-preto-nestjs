@@ -24,7 +24,7 @@ unit-tests:
     key:
       files:
         - yarn.lock
-      policy: pull
+    policy: pull
   script:
     - echo "Executing unit tests..."
 
@@ -34,7 +34,7 @@ build-artifacts:
     key:
       files:
         - yarn.lock
-      policy: pull
+    policy: pull
   script:
     - yarn build
     - yarn install --production --ignore-scripts --prefer-offline
