@@ -55,6 +55,7 @@ push-image:
     - echo "Building Docker image..."
     - mkdir -p /kaniko/.docker
     - echo "{\"auths\":{\"${CI_REGISTRY}\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
+    - echo -e "*\n!dist/\n!node_modules/\n!package.json" > .dockerignore
     - >-
       /kaniko/executor
       --cache=true --cache-copy-layers=true --cache-ttl=24h
