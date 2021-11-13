@@ -27,6 +27,7 @@ build1:
     paths:
       - dist/
       - node_modules/
+      - package.json
 
 deploy-prod:
   stage: execute
