@@ -13,9 +13,7 @@ cache:
     paths:
       - .yarn-cache/
 
-install-dependencies:
-  stage: .pre
-  script:
+before_script:
     - yarn install --cache-folder .yarn-cache --frozen-lockfile --prefer-offline
 
 unit-tests:
@@ -43,13 +41,12 @@ build-artifacts:
       - dist/
       - node_modules/
       - package.json
-# deploy-prod:
-#   stage: execute
-#   image: registry.gitlab.com/andrielson/odin-rio-preto-nestjs:gitlab-ci
-#   cache: []
-#   rules:
-#     - if: $CI_PIPELINE_SOURCE == "schedule"
-#   before_script: []
-#   script:
-#     - cd /srv
-#     - node dist/main
+
+push-image:
+  stage: deploy
+  cache: []
+  before_script: []
+  script:
+    - echo "Building Docker image..."
+    - echo $(pwd)
+    - ls -lh
