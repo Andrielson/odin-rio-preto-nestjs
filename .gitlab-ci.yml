@@ -17,10 +17,7 @@ cache: &global_cache
 install-dependencies:
   stage: .pre
   script:
-    - echo $(pwd)
-    - ls -lha
     - yarn install --cache-folder .yarn-cache --frozen-lockfile --prefer-offline
-    - du -sh node_modules/
 
 unit-tests:
   stage: test
@@ -30,10 +27,7 @@ unit-tests:
     # override the policy
     policy: pull
   script:
-    - echo $(pwd)
-    - ls -lha
     - echo "Executing unit tests..."
-    - du -sh node_modules/
 
 build-artifacts:
   stage: build
@@ -43,12 +37,8 @@ build-artifacts:
     # override the policy
     policy: pull
   script:
-    - echo $(pwd)
-    - ls -lha
     - yarn build
     - yarn install --cache-folder .yarn-cache --ignore-scripts --prefer-offline --production
-    - du -sh node_modules/
-    - touch ./node_modules/___andrielson
   artifacts:
     paths:
       - dist/
@@ -60,8 +50,4 @@ push-image:
   cache: []
   before_script: []
   script:
-    - echo $(pwd)
-    - ls -lha
-    - du -sh node_modules/
     - echo "Building Docker image..."
-    - ls -lha ./node_modules/ | head
