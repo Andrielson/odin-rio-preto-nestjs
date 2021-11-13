@@ -14,7 +14,8 @@ default:
       - .yarn-cache/
       - node_modules/
   tags:
-    - k8s
+    - docker
+    - andrielson
 
 install-dependencies:
   stage: .pre
