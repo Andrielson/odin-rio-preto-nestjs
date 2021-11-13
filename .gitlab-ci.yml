@@ -7,12 +7,12 @@ stages:
 
 # Cache modules in between jobs
 cache: &global_cache
-  - key:
-      files:
-        - yarn.lock
-    paths:
-      - .yarn-cache/
-      - node_modules/
+  key:
+    files:
+      - yarn.lock
+  paths:
+    - .yarn-cache/
+    - node_modules/
 
 install-dependencies:
   stage: .pre
