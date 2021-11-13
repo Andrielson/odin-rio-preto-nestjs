@@ -13,11 +13,7 @@ cache:
     paths:
       - .yarn-cache/
 
-get-dependencies:
-  stage: .pre
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "push"
-  script:
+before_script:
     - yarn install --cache-folder .yarn-cache --frozen-lockfile --prefer-offline
 
 build1:
@@ -38,6 +34,7 @@ deploy-prod:
   cache: []
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
+  before_script: []
   script:
     - cd /srv
     - node dist/main
