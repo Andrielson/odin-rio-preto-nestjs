@@ -1,18 +1,19 @@
-image: node:lts-alpine3.14
-
 stages:
   - test
   - build
   - deploy
 
-# Cache modules in between jobs
-cache: &global_cache
-  key:
-    files:
-      - yarn.lock
-  paths:
-    - .yarn-cache/
-    - node_modules/
+default:
+  # Cache modules in between jobs
+  cache: &global_cache
+    key:
+      files:
+        - yarn.lock
+    paths:
+      - .yarn-cache/
+      - node_modules/
+  tags:
+    - contabo-docker
 
 install-dependencies:
   stage: .pre
