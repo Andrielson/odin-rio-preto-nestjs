@@ -15,7 +15,7 @@ cache:
 
 before_script:
     - echo $(pwd)
-    - ls -lh
+    - ls -lha
     - yarn install --cache-folder .yarn-cache --frozen-lockfile --prefer-offline
 
 unit-tests:
@@ -26,8 +26,6 @@ unit-tests:
         - yarn.lock
     policy: pull
   script:
-    - echo $(pwd)
-    - ls -lh
     - echo "Executing unit tests..."
 
 build-artifacts:
@@ -38,8 +36,6 @@ build-artifacts:
         - yarn.lock
     policy: pull
   script:
-    - echo $(pwd)
-    - ls -lh
     - yarn build
     - yarn install --cache-folder .yarn-cache --ignore-scripts --prefer-offline --production
   artifacts:
@@ -54,5 +50,3 @@ push-image:
   before_script: []
   script:
     - echo "Building Docker image..."
-    - echo $(pwd)
-    - ls -lh
