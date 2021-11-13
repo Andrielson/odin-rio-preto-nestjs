@@ -1,0 +1,11 @@
+FROM node:lts-alpine3.14
+
+WORKDIR /srv
+
+ENV NODE_ENV production
+
+COPY ./node_modules ./node_modules
+COPY ./dist ./dist 
+COPY ./package.json ./package.json
+
+CMD ["node", "dist/main"]
