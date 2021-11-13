@@ -1,9 +1,9 @@
 image: node:lts-alpine3.14
 
 stages:
+  - test
   - build
   - deploy
-  - execute
 
 # Cache modules in between jobs
 cache:
@@ -13,13 +13,28 @@ cache:
     paths:
       - .yarn-cache/
 
-before_script:
+install-dependencies:
+  stage: .pre
+  script:
     - yarn install --cache-folder .yarn-cache --frozen-lockfile --prefer-offline
 
-build1:
+unit-tests:
+  stage: test
+  cache:
+    key:
+      files:
+        - yarn.lock
+      policy: pull
+  script:
+    - echo "Executing unit tests..."
+
+build-artifacts:
   stage: build
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "push"
+  cache:
+    key:
+      files:
+        - yarn.lock
+      policy: pull
   script:
     - yarn build
     - yarn install --production --ignore-scripts --prefer-offline
@@ -28,14 +43,13 @@ build1:
       - dist/
       - node_modules/
       - package.json
-
-deploy-prod:
-  stage: execute
-  image: registry.gitlab.com/andrielson/odin-rio-preto-nestjs:gitlab-ci
-  cache: []
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule"
-  before_script: []
-  script:
-    - cd /srv
-    - node dist/main
+# deploy-prod:
+#   stage: execute
+#   image: registry.gitlab.com/andrielson/odin-rio-preto-nestjs:gitlab-ci
+#   cache: []
+#   rules:
+#     - if: $CI_PIPELINE_SOURCE == "schedule"
+#   before_script: []
+#   script:
+#     - cd /srv
+#     - node dist/main
