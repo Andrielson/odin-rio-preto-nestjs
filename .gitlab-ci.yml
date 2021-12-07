@@ -14,7 +14,9 @@ default:
       - .yarn-cache/
       - node_modules/
   tags:
-    - contabo-docker
+    - andrielson
+    - shell
+    - node14
 
 install-dependencies:
   stage: .pre
