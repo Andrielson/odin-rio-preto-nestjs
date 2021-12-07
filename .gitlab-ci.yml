@@ -5,7 +5,7 @@ stages:
 
 default:
   image: node:lts-alpine3.14
-  # Cache modules in between jobs
+  # Cache modules in between
   cache: &global_cache
     key:
       files:
